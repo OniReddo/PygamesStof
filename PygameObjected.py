@@ -89,7 +89,6 @@ class Input:
         else:
             Input.playerinput[3] = False
 
-# documet
 class Physics:
     @staticmethod
     def playerphys():
