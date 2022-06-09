@@ -25,7 +25,8 @@ class Start:
         # Stuff declaration right before game startup
         global player1, text1
         player1 = Player()
-        text1 = Text(Input.playerinput, 20, 20)
+        Text.createtext(Input.playerinput, 50, 50)
+        Text.createtext(' W  S  A  D', 50, 20)
         Game.main()
 
 
@@ -86,6 +87,14 @@ class Physics:
 
 class Text:
     textfont = pygame.font.SysFont("monospace", 20)
+    textcount = 0
+    textwheel = []
+
+    @staticmethod
+    def createtext(text, posx, posy):
+        Text.textwheel.append(Text.textcount)
+        Text.textwheel[Text.textcount] = Text(text, posx, posy)
+        Text.textcount += 1
 
     def __init__(self, text, posx, posy):
         self.path = text
@@ -94,20 +103,20 @@ class Text:
         self.posy = posy
         self.surface = Text.textfont.render(self.text, 1, (0, 0, 0))
 
-    def txtupd(self):
-        self.text = str(self.path)
-        self.surface = Text.textfont.render(self.text, 1, (0, 0, 0))
+    @staticmethod
+    def txtupd():
+        for text in Text.textwheel:
+            text.text = str(text.path)
+            text.surface = Text.textfont.render(text.text, 1, (0, 0, 0))
+            Window.window.blit(text.surface, (text.posx, text.posy))
 
-    def textrender(self):
-        self.txtupd()
-        Window.window.blit(self.surface, (self.posx, self.posy))
 
 class Render:
     @staticmethod
     def render():
         Window.window.fill((255, 255, 255))
         player1.draw()
-        text1.textrender()
+        Text.txtupd()
         #       textfont = pygame.font.SysFont("monospace",20)
         #       text = str(Input.playerinput)
         #       Texttr = textfont.render(text,1,(0,0,0))
