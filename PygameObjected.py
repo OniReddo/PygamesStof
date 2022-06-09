@@ -13,8 +13,8 @@ class Window:
 class Methods:
     @staticmethod
     def quit():
-        for event in pygame.event.get():
-            if event.type == QUIT:
+        for Event in pygame.event.get():
+            if Event.type == QUIT:
                 pygame.quit()
                 exit()
 
@@ -22,11 +22,16 @@ class Methods:
 class Start:
     @staticmethod
     def start():
-        # Stuff declaration right before game startup
-        global player1, text1
-        player1 = Player()
+        # Some asset declaration right up before game starts
+        Player.createplayer()
         Text.createtext(Input.playerinput, 50, 50)
         Text.createtext(' W  S  A  D', 50, 20)
+
+        # Problem is here
+
+        Text.createtext(Player.playerwheel[0].posx, 500, 20)
+        Text.createtext(Player.playerwheel[0].posy, 500, 50)
+
         Game.main()
 
 
@@ -39,10 +44,20 @@ class Game:
             Game.clock.tick(60)
             Methods.quit()
             Input.player()
+            Physics.playerphys()
             Render.render()
 
 
 class Player:
+    playercount = 0
+    playerwheel = []
+
+    @staticmethod
+    def createplayer():
+        Player.playerwheel.append(Player.playercount)
+        Player.playerwheel[Player.playercount] = Player()
+        Player.playercount += 1
+
     def __init__(self):
         self.posx = 200
         self.posy = 200
@@ -53,36 +68,39 @@ class Player:
 
 
 class Input:
-    playerinput = [0, 0, 0, 0]
+    playerinput = [False, False, False, False]
 
     @staticmethod
     def player():
-        # Up
         if pygame.key.get_pressed()[K_w]:
-            Input.playerinput[0] = 1
+            Input.playerinput[0] = True
         else:
-            Input.playerinput[0] = 0
-        # Down
+            Input.playerinput[0] = False
         if pygame.key.get_pressed()[K_s]:
-            Input.playerinput[1] = 1
+            Input.playerinput[1] = True
         else:
-            Input.playerinput[1] = 0
-        # Left
+            Input.playerinput[1] = False
         if pygame.key.get_pressed()[K_a]:
-            Input.playerinput[2] = 1
+            Input.playerinput[2] = True
         else:
-            Input.playerinput[2] = 0
-        # Right
+            Input.playerinput[2] = False
         if pygame.key.get_pressed()[K_d]:
-            Input.playerinput[3] = 1
+            Input.playerinput[3] = True
         else:
-            Input.playerinput[3] = 0
+            Input.playerinput[3] = False
 
 
 class Physics:
     @staticmethod
     def playerphys():
-        pass
+        if Input.playerinput[0]:
+            Player.playerwheel[0].posy -= 10
+        if Input.playerinput[1]:
+            Player.playerwheel[0].posy += 10
+        if Input.playerinput[2]:
+            Player.playerwheel[0].posx -= 10
+        if Input.playerinput[3]:
+            Player.playerwheel[0].posx += 10
 
 
 class Text:
@@ -99,30 +117,27 @@ class Text:
     def __init__(self, text, posx, posy):
         self.path = text
         self.text = str(text)
-        self.posx = posx
-        self.posy = posy
-        self.surface = Text.textfont.render(self.text, 1, (0, 0, 0))
+        self.texposx = posx
+        self.texposy = posy
+        self.surface = Text.textfont.render(self.text, True, (0, 0, 0))
 
+    # Problem is also here
     @staticmethod
     def txtupd():
-        for text in Text.textwheel:
-            text.text = str(text.path)
-            text.surface = Text.textfont.render(text.text, 1, (0, 0, 0))
-            Window.window.blit(text.surface, (text.posx, text.posy))
+        for textnum in Text.textwheel:
+            textnum.text = str(textnum.path)
+            textnum.surface = Text.textfont.render(textnum.text, True, (0, 0, 0))
+            Window.window.blit(textnum.surface, (textnum.texposx, textnum.texposy))
 
 
 class Render:
     @staticmethod
     def render():
         Window.window.fill((255, 255, 255))
-        player1.draw()
+        Player.playerwheel[0].draw()
         Text.txtupd()
-        #       textfont = pygame.font.SysFont("monospace",20)
-        #       text = str(Input.playerinput)
-        #       Texttr = textfont.render(text,1,(0,0,0))
-        #       Window.window.blit(Texttr,(50,50))
-
         pygame.display.update()
 
 
-Start.start()
+if __name__ == '__main__':
+    Start.start()
