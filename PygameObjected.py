@@ -28,7 +28,6 @@ class Start:
         Text.createtext(' W  S  A  D', 50, 20)
 
         # Problem is here
-
         Text.createtext(Player.playerwheel[0].posx, 500, 20)
         Text.createtext(Player.playerwheel[0].posy, 500, 50)
 
