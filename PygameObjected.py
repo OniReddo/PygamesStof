@@ -25,14 +25,17 @@ class Start:
         # Stuff declaration right before game startup
         global player1, text1
         player1 = Player()
-        text1 = Text(Input.playernpt, 20, 20)
+        text1 = Text(Input.playerinput, 20, 20)
         Game.main()
 
 
 class Game:
+    clock = pygame.time.Clock()
+
     @staticmethod
     def main():
         while True:
+            Game.clock.tick(60)
             Methods.quit()
             Input.player()
             Render.render()
@@ -75,26 +78,36 @@ class Input:
             Input.playerinput[3] = 0
 
 
+class Physics:
+    @staticmethod
+    def playerphys():
+        pass
+
+
 class Text:
     textfont = pygame.font.SysFont("monospace", 20)
 
     def __init__(self, text, posx, posy):
-        self.text = text
+        self.path = text
+        self.text = str(text)
         self.posx = posx
         self.posy = posy
         self.surface = Text.textfont.render(self.text, 1, (0, 0, 0))
 
-    def txtrender(self):
+    def txtupd(self):
+        self.text = str(self.path)
         self.surface = Text.textfont.render(self.text, 1, (0, 0, 0))
-        Window.window.blit(self.surface, (self.posx, self.posy))
 
+    def textrender(self):
+        self.txtupd()
+        Window.window.blit(self.surface, (self.posx, self.posy))
 
 class Render:
     @staticmethod
     def render():
         Window.window.fill((255, 255, 255))
         player1.draw()
-        text1.txtrender()
+        text1.textrender()
         #       textfont = pygame.font.SysFont("monospace",20)
         #       text = str(Input.playerinput)
         #       Texttr = textfont.render(text,1,(0,0,0))
