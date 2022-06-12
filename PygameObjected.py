@@ -26,13 +26,13 @@ class Start:
         Player.createplayer()
         Text.createtext(Input.playerinput, 50, 50)
         Text.createtext(' W  S  A  D', 50, 20)
-
         # Problem is here
-
-        Text.createtext(Player.playerwheel[0].posx, 500, 20)
+        Text.createtext(Player.playerwheel[0].pposx, 500, 20)
         Text.createtext(Player.playerwheel[0].posy, 500, 50)
-
         Game.main()
+        # text = str(Player.playerwheel[0].pposx)
+        # surface = Text.textfont.render(text,True,(0, 0, 0))
+        # Window.window.blit(surface,(20,100))
 
 
 class Game:
@@ -62,6 +62,11 @@ class Player:
         self.posx = 200
         self.posy = 200
         self.color = (0, 0, 0)
+
+    @property
+    def pposx(self):
+        playerpos = self.posx
+        return playerpos
 
     def draw(self):
         pygame.draw.rect(Window.window, self.color, (self.posx, self.posy, 10, 10))
@@ -135,6 +140,7 @@ class Render:
         Window.window.fill((255, 255, 255))
         Player.playerwheel[0].draw()
         Text.txtupd()
+
         pygame.display.update()
 
 
