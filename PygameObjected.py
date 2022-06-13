@@ -27,7 +27,7 @@ class Start:
         Text.createtext(Input.playerinput, 50, 50)
         Text.createtext(' W  S  A  D', 50, 20)
         # Problem is here
-        Text.createtext(Player.playerwheel[0].pposx, 500, 20)
+        Text.createtext(Player.playerwheel[0].posx, 500, 20)
         Text.createtext(Player.playerwheel[0].posy, 500, 50)
         Game.main()
         # text = str(Player.playerwheel[0].pposx)
@@ -63,11 +63,6 @@ class Player:
         self.posy = 200
         self.color = (0, 0, 0)
 
-    @property
-    def pposx(self):
-        playerpos = self.posx
-        return playerpos
-
     def draw(self):
         pygame.draw.rect(Window.window, self.color, (self.posx, self.posy, 10, 10))
 
@@ -77,22 +72,31 @@ class Input:
 
     @staticmethod
     def player():
+        # W
         if pygame.key.get_pressed()[K_w]:
-            Input.playerinput[0] = True
+            if not Input.playerinput[1]:
+                Input.playerinput[0] = True
         else:
             Input.playerinput[0] = False
+        # S
         if pygame.key.get_pressed()[K_s]:
-            Input.playerinput[1] = True
+            if not Input.playerinput[0]:
+                Input.playerinput[1] = True
         else:
             Input.playerinput[1] = False
+        # A
         if pygame.key.get_pressed()[K_a]:
-            Input.playerinput[2] = True
+            if not Input.playerinput[3]:
+                Input.playerinput[2] = True
         else:
             Input.playerinput[2] = False
+        # D
         if pygame.key.get_pressed()[K_d]:
-            Input.playerinput[3] = True
+            if not Input.playerinput[2]:
+                Input.playerinput[3] = True
         else:
             Input.playerinput[3] = False
+
 
 class Physics:
     @staticmethod
@@ -140,6 +144,10 @@ class Render:
         Window.window.fill((255, 255, 255))
         Player.playerwheel[0].draw()
         Text.txtupd()
+
+        text = str(Player.playerwheel[0].posx)
+        surface = Text.textfont.render(text, True, (0, 0, 0))
+        Window.window.blit(surface, (20, 100))
 
         pygame.display.update()
 
