@@ -102,11 +102,11 @@ class Input:
 
 class Physics:
 
-    plyrslowdownx = 0.1
-    plyrslowdowny = 0.1
+    plyrslowdownx = 0.5
+    plyrslowdowny = 0.5
 
-    plyrspdboostx = 4
-    plyrspdboosty = 4
+    plyrspdboostx = 2
+    plyrspdboosty = 2
 
     @staticmethod
     def playerphys():
@@ -134,21 +134,15 @@ class Physics:
 
         # Add natural slowdown
         # Y
-        if Player.playerwheel[0].spdy <0.1 or Player.playerwheel[0].spdy > -0.1 and Input.playerinput[0] == False and Input.playerinput[1] == False:
-            Player.playerwheel[0].spdy = 0
-        else:
-            if Player.playerwheel[0].spdy > 0:
-                Player.playerwheel[0].spdy -= Physics.plyrslowdowny
-            elif Player.playerwheel[0].spdy < 0 :
-                Player.playerwheel[0].spdy += Physics.plyrslowdowny
-        # X
-        if Player.playerwheel[0].spdx < 0.1 or Player.playerwheel[0].spdx > -0.1 and Input.playerinput[2] == False and Input.playerinput[3] == False:
-            Player.playerwheel[0].spdx = 0
-        else:
-            if Player.playerwheel[0].spdx > 0:
-                Player.playerwheel[0].spdx -= Physics.plyrslowdownx
-            elif Player.playerwheel[0].spdx < 0:
-                Player.playerwheel[0].spdx += Physics.plyrslowdownx
+        if Player.playerwheel[0].spdy > 0:
+            Player.playerwheel[0].spdy -= Physics.plyrslowdowny
+        elif Player.playerwheel[0].spdy < 0 :
+            Player.playerwheel[0].spdy += Physics.plyrslowdowny
+         # X
+        if Player.playerwheel[0].spdx > 0:
+            Player.playerwheel[0].spdx -= Physics.plyrslowdownx
+        elif Player.playerwheel[0].spdx < 0:
+            Player.playerwheel[0].spdx += Physics.plyrslowdownx
 
 
         # Change playerpos after physics
