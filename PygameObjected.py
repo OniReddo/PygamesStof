@@ -101,21 +101,59 @@ class Input:
 
 
 class Physics:
+
+    plyrslowdownx = 0.1
+    plyrslowdowny = 0.1
+
+    plyrspdboostx = 4
+    plyrspdboosty = 4
+
     @staticmethod
     def playerphys():
 
-
+        # Y Speedbreaker limit
+        if Player.playerwheel[0].spdy > 10:
+            Player.playerwheel[0].spdy = 10
+        elif Player.playerwheel[0].spdy < -10:
+            Player.playerwheel[0].spdy = -10
+        # X Speedbreaker limit
         if Player.playerwheel[0].spdx > 10:
             Player.playerwheel[0].spdx = 10
-        elif if Player.playerwheel[0].spdx < -10:
-            if Player.playerwheel[0].spdx = -10
+        elif Player.playerwheel[0].spdx < -10:
+            Player.playerwheel[0].spdx = -10
+
+        # Player input force
+        if Input.playerinput[0]:
+            Player.playerwheel[0].spdy -= Physics.plyrspdboosty
+        if Input.playerinput[1]:
+            Player.playerwheel[0].spdy += Physics.plyrspdboosty
+        if Input.playerinput[2]:
+            Player.playerwheel[0].spdx -= Physics.plyrspdboostx
+        if Input.playerinput[3]:
+            Player.playerwheel[0].spdx += Physics.plyrspdboostx
+
+        # Add natural slowdown
+        # Y
+        if Player.playerwheel[0].spdy <0.1 or Player.playerwheel[0].spdy > -0.1 and Input.playerinput[0] == False and Input.playerinput[1] == False:
+            Player.playerwheel[0].spdy = 0
+        else:
+            if Player.playerwheel[0].spdy > 0:
+                Player.playerwheel[0].spdy -= Physics.plyrslowdowny
+            elif Player.playerwheel[0].spdy < 0 :
+                Player.playerwheel[0].spdy += Physics.plyrslowdowny
+        # X
+        if Player.playerwheel[0].spdx < 0.1 or Player.playerwheel[0].spdx > -0.1 and Input.playerinput[2] == False and Input.playerinput[3] == False:
+            Player.playerwheel[0].spdx = 0
+        else:
+            if Player.playerwheel[0].spdx > 0:
+                Player.playerwheel[0].spdx -= Physics.plyrslowdownx
+            elif Player.playerwheel[0].spdx < 0:
+                Player.playerwheel[0].spdx += Physics.plyrslowdownx
 
 
-
-
-
-
-
+        # Change playerpos after physics
+        Player.playerwheel[0].posy += Player.playerwheel[0].spdy
+        Player.playerwheel[0].posx += Player.playerwheel[0].spdx
 
 
 class Text:
