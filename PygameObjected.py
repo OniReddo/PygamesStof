@@ -61,6 +61,8 @@ class Player:
     def __init__(self):
         self.posx = 200
         self.posy = 200
+        self.spdx = 0
+        self.spdy = 0
         self.color = (0, 0, 0)
 
     def draw(self):
@@ -101,14 +103,19 @@ class Input:
 class Physics:
     @staticmethod
     def playerphys():
-        if Input.playerinput[0]:
-            Player.playerwheel[0].posy -= 10
-        if Input.playerinput[1]:
-            Player.playerwheel[0].posy += 10
-        if Input.playerinput[2]:
-            Player.playerwheel[0].posx -= 10
-        if Input.playerinput[3]:
-            Player.playerwheel[0].posx += 10
+
+
+        if Player.playerwheel[0].spdx > 10:
+            Player.playerwheel[0].spdx = 10
+        elif if Player.playerwheel[0].spdx < -10:
+            if Player.playerwheel[0].spdx = -10
+
+
+
+
+
+
+
 
 
 class Text:
