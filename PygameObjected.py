@@ -173,6 +173,9 @@ class Text:
     def txtupd():
         for textnum in Text.textwheel:
             textnum.text = str(textnum.path)
+            print(textnum.text)
+            print(type(textnum.path))
+            print(type(textnum.text))
             textnum.surface = Text.textfont.render(textnum.text, True, (0, 0, 0))
             Window.window.blit(textnum.surface, (textnum.texposx, textnum.texposy))
 
