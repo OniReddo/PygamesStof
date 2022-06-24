@@ -1,5 +1,6 @@
 import pygame.display
 from pygame import *
+import ctypes
 
 pygame.init()
 
@@ -132,7 +133,7 @@ class Physics:
         if Input.playerinput[3]:
             Player.playerwheel[0].spdx += Physics.plyrspdboostx
 
-        # Add natural slowdown
+        # Add Friction
         # Y
         if Player.playerwheel[0].spdy > 0:
             Player.playerwheel[0].spdy -= Physics.plyrslowdowny
@@ -162,8 +163,8 @@ class Text:
         Text.textcount += 1
 
     def __init__(self, text, posx, posy):
-        self.path = text
-        self.text = str(text)
+        self.path = id(text)
+        self.text = str(ctypes.cast(self.path, ctypes.py_object).value)
         self.texposx = posx
         self.texposy = posy
         self.surface = Text.textfont.render(self.text, True, (0, 0, 0))
@@ -187,10 +188,11 @@ class Render:
         Player.playerwheel[0].draw()
         Text.txtupd()
 
-        text = str(Player.playerwheel[0].posx)
+        textpath = id(Player.playerwheel[0].posx)
+        text = str(ctypes.cast(textpath, ctypes.py_object).value)
         surface = Text.textfont.render(text, True, (0, 0, 0))
         Window.window.blit(surface, (20, 100))
-
+        print(id(Player.playerwheel[0].posx))
         pygame.display.update()
 
 
