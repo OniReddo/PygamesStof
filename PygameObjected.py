@@ -31,9 +31,6 @@ class Start:
         Text.createtext(Player.playerwheel[0].posx, 500, 20)
         Text.createtext(Player.playerwheel[0].posy, 500, 50)
         Game.main()
-        # text = str(Player.playerwheel[0].pposx)
-        # surface = Text.textfont.render(text,True,(0, 0, 0))
-        # Window.window.blit(surface,(20,100))
 
 
 class Game:
@@ -102,7 +99,6 @@ class Input:
 
 
 class Physics:
-
     plyrslowdownx = 0.5
     plyrslowdowny = 0.5
 
@@ -137,14 +133,13 @@ class Physics:
         # Y
         if Player.playerwheel[0].spdy > 0:
             Player.playerwheel[0].spdy -= Physics.plyrslowdowny
-        elif Player.playerwheel[0].spdy < 0 :
+        elif Player.playerwheel[0].spdy < 0:
             Player.playerwheel[0].spdy += Physics.plyrslowdowny
-         # X
+        # X
         if Player.playerwheel[0].spdx > 0:
             Player.playerwheel[0].spdx -= Physics.plyrslowdownx
         elif Player.playerwheel[0].spdx < 0:
             Player.playerwheel[0].spdx += Physics.plyrslowdownx
-
 
         # Change playerpos after physics
         Player.playerwheel[0].posy += Player.playerwheel[0].spdy
@@ -163,20 +158,16 @@ class Text:
         Text.textcount += 1
 
     def __init__(self, text, posx, posy):
-        self.path = id(text)
-        self.text = str(ctypes.cast(self.path, ctypes.py_object).value)
+        self.path = text
+        self.text = str(self.path)
         self.texposx = posx
         self.texposy = posy
         self.surface = Text.textfont.render(self.text, True, (0, 0, 0))
 
-    # Problem is also here
     @staticmethod
     def txtupd():
         for textnum in Text.textwheel:
             textnum.text = str(textnum.path)
-            print(textnum.text)
-            print(type(textnum.path))
-            print(type(textnum.text))
             textnum.surface = Text.textfont.render(textnum.text, True, (0, 0, 0))
             Window.window.blit(textnum.surface, (textnum.texposx, textnum.texposy))
 
@@ -187,12 +178,6 @@ class Render:
         Window.window.fill((255, 255, 255))
         Player.playerwheel[0].draw()
         Text.txtupd()
-
-        textpath = id(Player.playerwheel[0].posx)
-        text = str(ctypes.cast(textpath, ctypes.py_object).value)
-        surface = Text.textfont.render(text, True, (0, 0, 0))
-        Window.window.blit(surface, (20, 100))
-        print(id(Player.playerwheel[0].posx))
         pygame.display.update()
 
 
