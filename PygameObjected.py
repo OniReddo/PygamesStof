@@ -186,3 +186,4 @@ class Render:
 
 if __name__ == '__main__':
     Start.start()
+    # Ta funcionano omagod
