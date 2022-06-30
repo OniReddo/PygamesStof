@@ -1,6 +1,5 @@
 import pygame.display
 from pygame import *
-import ctypes
 
 pygame.init()
 
@@ -23,13 +22,12 @@ class Methods:
 class Start:
     @staticmethod
     def start():
-        # Some asset declaration right up before game starts
         Player.createplayer()
 
         Text.createtext(Input.playerinput, 50, 50)
         Text.createtext(' W  S  A  D', 50, 20)
-        Text.createtext(Player.playerwheel[0].posx, 500, 20)
-        Text.createtext(Player.playerwheel[0].posy, 500, 50)
+        Text.createtext(Player.playerwheel[0].pos, 500, 20, 0)
+        Text.createtext(Player.playerwheel[0].pos[1], 500, 50)
         Game.main()
 
 
@@ -57,15 +55,14 @@ class Player:
         Player.playercount += 1
 
     def __init__(self):
-        self.posx = 200
-        self.posy = 200
-        self.cords = [self.posx,self.posy]
+
+        self.pos = [200, 200]
         self.spdx = 0
         self.spdy = 0
         self.color = (0, 0, 0)
 
     def draw(self):
-        pygame.draw.rect(Window.window, self.color, (self.posx, self.posy, 10, 10))
+        pygame.draw.rect(Window.window, self.color, (self.pos[0], self.pos[1], 10, 10))
 
 
 class Input:
@@ -144,35 +141,32 @@ class Physics:
             Player.playerwheel[0].spdx += Physics.plyrslowdownx
 
         # Change playerpos after physics
-        Player.playerwheel[0].posy += Player.playerwheel[0].spdy
-        Player.playerwheel[0].posx += Player.playerwheel[0].spdx
+        Player.playerwheel[0].pos[1] += Player.playerwheel[0].spdy
+        Player.playerwheel[0].pos[0] += Player.playerwheel[0].spdx
 
 
 class Text:
     textfont = pygame.font.SysFont("monospace", 20)
-    # this is the place where text obects are stored at
     textcount = 0
     textwheel = []
 
-    # this is a method that receives arguments and creates a text object out of them
-    # that object is put inside the list above
     @staticmethod
-    def createtext(text, posx, posy):
+    def createtext(text, posx, posy, house=None):
+        print(f' Creation = {text}')
+        print(type(text))
         Text.textwheel.append(Text.textcount)
-        Text.textwheel[Text.textcount] = Text(text, posx, posy)
+        Text.textwheel[Text.textcount] = Text(text, posx, posy, house)
         Text.textcount += 1
 
-    # path and text are almost the same thing
-    # path is supposed to hold the actual path to the object i want to reference every frame
-    # whilst text is the actual text versio that is to be displayed
-    def __init__(self, text, posx, posy):
+    def __init__(self, text, posx, posy, house=None):
+
         self.path = text
         self.text = str(self.path)
         self.texposx = posx
         self.texposy = posy
+        self.house = house
         self.surface = Text.textfont.render(self.text, True, (0, 0, 0))
 
-    # every frame a function runs through the list and updates the text to be the str version of the path
     @staticmethod
     def txtupd():
         for textnum in Text.textwheel:
