@@ -27,7 +27,7 @@ class Start:
         Text.createtext(Input.playerinput, 50, 50)
         Text.createtext(' W  S  A  D', 50, 20)
         Text.createtext(Player.playerwheel[0].pos, 500, 20, 0)
-        Text.createtext(Player.playerwheel[0].pos[1], 500, 50)
+        Text.createtext(Player.playerwheel[0].spd, 500, 50)
         Game.main()
 
 
@@ -55,10 +55,8 @@ class Player:
         Player.playercount += 1
 
     def __init__(self):
-
         self.pos = [200, 200]
-        self.spdx = 0
-        self.spdy = 0
+        self.spd = [0, 0]
         self.color = (0, 0, 0)
 
     def draw(self):
@@ -108,41 +106,41 @@ class Physics:
 
         # Placeholder
         # Y Speedbreaker limit
-        if Player.playerwheel[0].spdy > 10:
-            Player.playerwheel[0].spdy = 10
-        elif Player.playerwheel[0].spdy < -10:
-            Player.playerwheel[0].spdy = -10
+        if Player.playerwheel[0].spd[1] > 10:
+            Player.playerwheel[0].spd[1] = 10
+        elif Player.playerwheel[0].spd[1] < -10:
+            Player.playerwheel[0].spd[1] = -10
         # X Speedbreaker limit
-        if Player.playerwheel[0].spdx > 10:
-            Player.playerwheel[0].spdx = 10
-        elif Player.playerwheel[0].spdx < -10:
-            Player.playerwheel[0].spdx = -10
+        if Player.playerwheel[0].spd[0] > 10:
+            Player.playerwheel[0].spd[0] = 10
+        elif Player.playerwheel[0].spd[0] < -10:
+            Player.playerwheel[0].spd[0] = -10
 
         # Player input force
         if Input.playerinput[0]:
-            Player.playerwheel[0].spdy -= Physics.plyrspdboosty
+            Player.playerwheel[0].spd[1] -= Physics.plyrspdboosty
         if Input.playerinput[1]:
-            Player.playerwheel[0].spdy += Physics.plyrspdboosty
+            Player.playerwheel[0].spd[1] += Physics.plyrspdboosty
         if Input.playerinput[2]:
-            Player.playerwheel[0].spdx -= Physics.plyrspdboostx
+            Player.playerwheel[0].spd[0] -= Physics.plyrspdboostx
         if Input.playerinput[3]:
-            Player.playerwheel[0].spdx += Physics.plyrspdboostx
+            Player.playerwheel[0].spd[0] += Physics.plyrspdboostx
 
         # Add Friction
         # Y
-        if Player.playerwheel[0].spdy > 0:
-            Player.playerwheel[0].spdy -= Physics.plyrslowdowny
-        elif Player.playerwheel[0].spdy < 0:
-            Player.playerwheel[0].spdy += Physics.plyrslowdowny
+        if Player.playerwheel[0].spd[1] > 0:
+            Player.playerwheel[0].spd[1] -= Physics.plyrslowdowny
+        elif Player.playerwheel[0].spd[1] < 0:
+            Player.playerwheel[0].spd[1] += Physics.plyrslowdowny
         # X
-        if Player.playerwheel[0].spdx > 0:
-            Player.playerwheel[0].spdx -= Physics.plyrslowdownx
-        elif Player.playerwheel[0].spdx < 0:
-            Player.playerwheel[0].spdx += Physics.plyrslowdownx
+        if Player.playerwheel[0].spd[0] > 0:
+            Player.playerwheel[0].spd[0] -= Physics.plyrslowdownx
+        elif Player.playerwheel[0].spd[0] < 0:
+            Player.playerwheel[0].spd[0] += Physics.plyrslowdownx
 
         # Change playerpos after physics
-        Player.playerwheel[0].pos[1] += Player.playerwheel[0].spdy
-        Player.playerwheel[0].pos[0] += Player.playerwheel[0].spdx
+        Player.playerwheel[0].pos[1] += Player.playerwheel[0].spd[1]
+        Player.playerwheel[0].pos[0] += Player.playerwheel[0].spd[0]
 
 
 class Text:
@@ -159,7 +157,6 @@ class Text:
         Text.textcount += 1
 
     def __init__(self, text, posx, posy, house=None):
-
         self.path = text
         self.text = str(self.path)
         self.texposx = posx
