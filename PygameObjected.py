@@ -51,6 +51,8 @@ class Start:
         Text.createtext(Enemy.enemywheel[0].pos, 500, 70)
         Text.createtext(Player.playerwheel[0].damage, 50, 70)
         Text.createtext(Player.playerwheel[0].score, 50, 100)
+        Text.createtext(Input.pressed, 50, 120)
+        Text.createtext(Input.presscount, 50, 140)
         Game.main()
 
 
@@ -155,7 +157,8 @@ class Input:
     playerinput = [False, False, False, False]
     isflipped = False
     hold = False
-    pressed = False
+    pressed = [False]
+    presscount = [0]
 
     @staticmethod
     def player():
@@ -191,11 +194,12 @@ class Input:
         else:
             Input.hold = False
 
-        if Input.hold == True and Input.pressed == False:
+        if Input.hold == True and Input.pressed[0] == False:
+            Input.presscount[0] += 1
             print('apertado')
-            Input.pressed = True
-        if Input.hold == False and Input.pressed == True:
-            Input.pressed = False
+            Input.pressed[0] = True
+        if Input.hold == False and Input.pressed[0] == True:
+            Input.pressed[0] = False
             print('solto')
 
 
