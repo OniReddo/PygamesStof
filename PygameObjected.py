@@ -20,6 +20,14 @@ class Methods:
                 pygame.quit()
                 exit()
 
+    @staticmethod
+    def space():
+        for Event in pygame.event.get():
+            print(Event)
+            if Event.type == pygame.KEYDOWN:
+                if Event.ket == pygame.K_SPACE:
+                    print('a')
+
 
 class Start:
     @staticmethod
@@ -41,6 +49,8 @@ class Start:
         Text.createtext(Player.playerwheel[0].pos, 500, 20)
         Text.createtext(Player.playerwheel[0].spd, 500, 50)
         Text.createtext(Enemy.enemywheel[0].pos, 500, 70)
+        Text.createtext(Player.playerwheel[0].damage, 50, 70)
+        Text.createtext(Player.playerwheel[0].score, 50, 100)
         Game.main()
 
 
@@ -52,7 +62,7 @@ class Game:
         while True:
             Game.clock.tick(60)
             Methods.quit()
-            Collisions.sword()
+            Collisions.collisions()
             Input.player()
             Physics.playerphys()
             Enemy.chase()
@@ -62,11 +72,13 @@ class Game:
 class EnemyOBJ:
     def __init__(self):
         print('criado')
-        self.color = (255,0,0)
-        self.pos = [random.randint(1,500), random.randint(1,500)]
+        self.color = (255, 0, 0)
+        self.pos = [random.randint(1, 500), random.randint(1, 500)]
+        self.rect = pygame.Rect(self.pos[0], self.pos[1], 10, 10)
 
     def draw(self):
         pygame.draw.rect(Window.window, self.color, (self.pos[0], self.pos[1], 10, 10))
+
 
 class Enemy:
     enemycount = 0
@@ -85,8 +97,6 @@ class Enemy:
             disx = Player.playerwheel[0].pos[0] - enemy.pos[0]
             disy = Player.playerwheel[0].pos[1] - enemy.pos[1]
 
-            print(enemy.pos)
-
             if abs(disx) <= spd:
                 enemy.pos[0] = Player.playerwheel[0].pos[0]
                 disx = Player.playerwheel[0].pos[0] - enemy.pos[0]
@@ -96,10 +106,9 @@ class Enemy:
                 disy = Player.playerwheel[0].pos[1] - enemy.pos[1]
 
             if disx != 0:
-                enemy.pos[0] += spd * ( disx / abs( disx ))
+                enemy.pos[0] += spd * (disx / abs(disx))
             if disy != 0:
-                enemy.pos[1] += spd * ( disy / abs(disy))
-
+                enemy.pos[1] += spd * (disy / abs(disy))
 
 
 class Player:
@@ -113,9 +122,11 @@ class Player:
         Player.playercount += 1
 
     def __init__(self):
-        self.pos = [200,200]
+        self.pos = [200, 200]
         self.spd = [0, 0]
         self.color = (0, 0, 0)
+        self.damage = [0]
+        self.score = [0]
 
     def draw(self):
         pygame.draw.rect(Window.window, self.color, (self.pos[0], self.pos[1], 10, 10))
@@ -132,15 +143,19 @@ class Sword:
         Sword.swordcount += 1
 
     def __init__(self):
-        self.color = (0,0,255)
+        self.color = (0, 0, 255)
         self.swordpos = Player.playerwheel[0].pos[0]
+        self.rect = pygame.Rect(self.swordpos, Player.playerwheel[0].pos[1], 20, 20)
 
     def draw(self):
         pygame.draw.rect(Window.window, (0, 255, 255), (self.swordpos, Player.playerwheel[0].pos[1], 20, 10))
 
+
 class Input:
     playerinput = [False, False, False, False]
     isflipped = False
+    hold = False
+    pressed = False
 
     @staticmethod
     def player():
@@ -170,9 +185,22 @@ class Input:
                 Input.isflipped = False
         else:
             Input.playerinput[3] = False
+
         if pygame.key.get_pressed()[K_SPACE]:
-            for enemy in Enemy.enemywheel:
-                enemy.pos = [random.randint(1,1280), random.randint(1,720)]
+            Input.hold = True
+        else:
+            Input.hold = False
+
+        if Input.hold == True and Input.pressed == False:
+            print('apertado')
+            Input.pressed = True
+        if Input.hold == False and Input.pressed == True:
+            Input.pressed = False
+            print('solto')
+
+
+
+
 
 
 class Physics:
@@ -222,18 +250,37 @@ class Physics:
         Player.playerwheel[0].pos[1] += Player.playerwheel[0].spd[1]
         Player.playerwheel[0].pos[0] += Player.playerwheel[0].spd[0]
 
-        if Input.isflipped == False :
+        if Input.isflipped is False:
             Sword.swordwheel[0].swordpos = Player.playerwheel[0].pos[0] + 20
         if Input.isflipped:
             Sword.swordwheel[0].swordpos = Player.playerwheel[0].pos[0] - 30
 
+
 class Collisions:
+
     @staticmethod
     def sword():
         for enemy in Enemy.enemywheel:
-           pass
+            sword_pth = Sword.swordwheel[0]
+            enemy_rect = pygame.Rect((enemy.pos[0], enemy.pos[1]), (10, 10))
+            sword_rect = pygame.Rect((sword_pth.swordpos, Player.playerwheel[0].pos[1]), (20, 20))
+            if enemy_rect.colliderect(sword_rect):
+                enemy.pos[0] = random.randint(0, 1280)
+                enemy.pos[1] = random.randint(0, 720)
+                Player.playerwheel[0].score[0] += 1
 
+    @staticmethod
+    def player():
+        for enemy in Enemy.enemywheel:
+            enemy_rect = pygame.Rect((enemy.pos[0], enemy.pos[1]), (10, 10))
+            player_rect = pygame.Rect((Player.playerwheel[0].pos[0], Player.playerwheel[0].pos[1]), (10, 10))
+            if player_rect.colliderect(enemy_rect):
+                Player.playerwheel[0].damage[0] += 1
 
+    @staticmethod
+    def collisions():
+        Collisions.sword()
+        Collisions.player()
 
 
 class Text:
@@ -272,7 +319,6 @@ class Render:
             sword.draw()
         for player in Player.playerwheel:
             player.draw()
-
 
     @staticmethod
     def render():
