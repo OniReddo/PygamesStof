@@ -9,7 +9,8 @@ pygame.init()
 class Window:
     windowx = 1280
     windowy = 720
-    window = pygame.display.set_mode((windowx, windowy))
+    flags = pygame.SCALED | pygame.FULLSCREEN
+    window = pygame.display.set_mode((windowx, windowy),flags)
 
 
 class Methods:
@@ -38,14 +39,9 @@ class Start:
         Player.createplayer()
         Sword.create()
 
-        Enemy.create()
-        Enemy.create()
-        Enemy.create()
-        Enemy.create()
-        Enemy.create()
-        Enemy.create()
-        Enemy.create()
-        Enemy.create()
+        for a in range(0,8):
+            Enemy.create()
+
 
         Text.createtext(Input.playerinput, 50, 50)
         Text.createtext(' W  S  A  D', 50, 20)
