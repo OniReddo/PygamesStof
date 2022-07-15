@@ -13,6 +13,7 @@ class Window:
 
 
 class Methods:
+    paused = [False]
     @staticmethod
     def quit():
         for Event in pygame.event.get():
@@ -21,12 +22,14 @@ class Methods:
                 exit()
 
     @staticmethod
-    def space():
-        for Event in pygame.event.get():
-            print(Event)
-            if Event.type == pygame.KEYDOWN:
-                if Event.ket == pygame.K_SPACE:
-                    print('a')
+    def pause():
+        if Methods.paused[0]:
+            print('paused')
+            Methods.paused[0] = False
+        else:
+            print('unpaused')
+            Methods.paused[0] = True
+
 
 
 class Start:
@@ -53,6 +56,7 @@ class Start:
         Text.createtext(Player.playerwheel[0].score, 50, 100)
         Text.createtext(Input.pressed, 50, 120)
         Text.createtext(Input.presscount, 50, 140)
+        Text.createtext(Methods.paused, 50, 160)
         Game.main()
 
 
@@ -64,10 +68,11 @@ class Game:
         while True:
             Game.clock.tick(60)
             Methods.quit()
-            Collisions.collisions()
             Input.player()
-            Physics.playerphys()
-            Enemy.chase()
+            if not Methods.paused[0]:
+                Collisions.collisions()
+                Physics.playerphys()
+                Enemy.chase()
             Render.render()
 
 
@@ -198,13 +203,12 @@ class Input:
             Input.presscount[0] += 1
             print('apertado')
             Input.pressed[0] = True
+
+            Methods.pause()
+
         if Input.hold == False and Input.pressed[0] == True:
             Input.pressed[0] = False
             print('solto')
-
-
-
-
 
 
 class Physics:
