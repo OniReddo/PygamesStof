@@ -1,5 +1,4 @@
-
-print('V1')
+# ('V1')
 
 import random
 import pygame
@@ -26,6 +25,35 @@ class Window:
         self.window.fill((255, 255, 255))
 
         pygame.display.update()
+
+
+class OBJ:
+    def __init__(self, pos, size, color, window):
+        self.pos = pos
+        self.size = size
+        self.color = color
+        self.window = window
+
+    def draw(self):
+        pygame.draw.rect(self.window,
+                         self.color,
+                         (
+                             self.pos[0],
+                             self.pos[1],
+                             self.size[0],
+                             self.size[1]
+                         )
+                         )
+
+
+class OBJ_Handler:
+    def __init__(self):
+        self.playercount = 0
+        self.playerwheel = []
+
+    def add_player(self, pos, size, color, window):
+        self.playerwheel.append(OBJ(pos, size, color, window))
+        self.playercount += 1
 
 
 class Game:
