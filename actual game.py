@@ -16,14 +16,14 @@ class Methods:
 
 class Window:
     def __init__(self):
-        self.resx = 1280
-        self.resy = 720
+        self.resx = 1920
+        self.resy = 1080
         self.flags = pygame.SCALED
         self.window = pygame.display.set_mode((self.resx, self.resy))
 
-    def update(self):
-        self.window.fill((255, 255, 255))
-
+    def update(self):                                             # Clockwise
+        self.window.fill((255, 255, 255))            # TL       # TR       $ DR       # DL
+        pygame.draw.polygon(self.window,(0, 0, 0), [(200, 200), (200,400), (400,400), (400,200)])
         pygame.display.update()
 
 
