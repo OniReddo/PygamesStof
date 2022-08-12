@@ -1,6 +1,5 @@
-# ('V1')
+# V 0
 
-import random
 import pygame
 import time
 
@@ -14,66 +13,57 @@ class Methods:
                 exit()
 
 
-class Window:
+class Startup:
     def __init__(self):
-        self.resx = 1920
-        self.resy = 1080
-        self.flags = pygame.SCALED
-        self.window = pygame.display.set_mode((self.resx, self.resy))
-
-    def update(self):                                             # Clockwise
-        self.window.fill((255, 255, 255))            # TL       # TR       $ DR       # DL
-        pygame.draw.polygon(self.window,(0, 0, 0), [(200, 200), (200,400), (400,400), (400,200)])
-        pygame.display.update()
-
-
-class OBJ:
-    def __init__(self, pos, size, color, window):
-        self.pos = pos
-        self.size = size
-        self.color = color
-        self.window = window
-
-    def draw(self):
-        pygame.draw.rect(self.window,
-                         self.color,
-                         (
-                             self.pos[0],
-                             self.pos[1],
-                             self.size[0],
-                             self.size[1]
-                         )
-                         )
-
-
-class OBJ_Handler:
-    def __init__(self):
-        self.playercount = 0
-        self.playerwheel = []
-
-    def add_player(self, pos, size, color, window):
-        self.playerwheel.append(OBJ(pos, size, color, window))
-        self.playercount += 1
-
-
-class Game:
-    def __init__(self):
-        self.clock = pygame.time.Clock()
-        self.win = Window()
+        self.window = Render()
         self.time = Time()
+        self.framerate = 165
+        self.inputs = Input()
 
-        self.mainloop()
 
-    def mainloop(self):
+class Game(Startup):
+    def __init__(self):
+        super().__init__()
+
+        self.test()
+
+    def test(self):
         while True:
-            self.clock.tick(165)
+            self.time.clock.tick(self.framerate)
             Methods.quit()
-            self.time.update()
-            self.win.update()
+            self.inputs.keys_update()
+            self.window.win_update()
+
+
+class Input:
+    def __init__(self):
+        self.keys_name = []
+        self.keys = []
+
+        self.addkey(pygame.K_w)
+        self.addkey(pygame.K_a)
+        self.addkey(pygame.K_s)
+        self.addkey(pygame.K_d)
+
+    def addkey(self, key):
+        self.keys_name.append(key)
+        self.keys.append(False)
+
+    def keys_update(self, count=0):
+
+        for key in self.keys_name:
+            if pygame.key.get_pressed()[key]:
+                self.keys[count] = True
+            else:
+                self.keys[count] = False
+            count += 1
 
 
 class Time:
     def __init__(self):
+        self.clock = pygame.time.Clock()
+
+        self.starttime = time.time()
         self.now = 0
         self.dt = 0
         self.prev_time = 0
@@ -82,6 +72,24 @@ class Time:
         self.now = time.time()
         self.dt = self.now - self.prev_time
         self.prev_time = self.now
+
+
+class Screen:
+    def __init__(self):
+        self.res = [1600, 900]
+        self.resx = self.res[0]
+        self.resy = self.res[1]
+        self.flags = None
+        self.window = pygame.display.set_mode((self.resx, self.resy))
+
+
+class Render(Screen):
+    def __init__(self):
+        super().__init__()
+
+    def win_update(self):
+        self.window.fill((255, 255, 255))
+        pygame.display.update()
 
 
 if __name__ == '__main__':
