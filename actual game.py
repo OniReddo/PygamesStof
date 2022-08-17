@@ -1,4 +1,3 @@
-# V 0
 
 import pygame
 import time
@@ -12,6 +11,12 @@ class Methods:
                 pygame.quit()
                 exit()
 
+    @staticmethod
+    def find_add(find, stuff, add_to):
+        for search in stuff:
+            if search == find:
+                add_to.append(search)
+
 
 class Startup:
     def __init__(self):
@@ -19,6 +24,7 @@ class Startup:
         self.time = Time()
         self.framerate = 165
         self.inputs = Input()
+        self.camera = Camera(['w', 'a', 's', 'd'], self.inputs.keys)
 
 
 class Game(Startup):
@@ -29,42 +35,78 @@ class Game(Startup):
 
     def test(self):
         while True:
+            print(self.camera.pos)
             self.time.clock.tick(self.framerate)
+            self.time.update()
             Methods.quit()
-            self.inputs.keys_update()
+            self.inputs.update()
+            self.camera.update(self.time.dt)
             self.window.win_update()
 
 
 class Camera:
-    def __init__(self, keys):
-        self.pos = [0,0]
-        self.keys = keys
+    def __init__(self, keys, holder):
+        self.pos = [0, 0]
+        self.keys = []
+        self.holder = holder
+        for key in keys:
+            Methods.find_add(key, self.holder, self.keys)
         self.speed = []
+        print(self.keys)
 
-    def check
+    def move(self, key, house, step, dt):
+        if key:
+            self.pos[house] += step * dt
+
+    def update(self, dt):
+        self.move(self.keys[0], 0, -100, dt)
+        self.move(self.keys[1], 1, -100, dt)
+        self.move(self.keys[2], 0, 100, dt)
+        self.move(self.keys[3], 1, 100, dt)
+
+
+class Key:
+    def __str__(self):
+        return self.key
+
+    def __eq__(self, other):
+        if self.key == str(other):
+            return True
+
+    def __bool__(self):
+        if self.pressed:
+            return True
+        else:
+            return False
+
+    def __init__(self, key):
+
+        print('created key :', key.upper())
+
+        self.key = key
+        self.ascii_key = ord(key)
+        self.pressed = False
+
 
 class Input:
     def __init__(self):
-        self.keys_name = []
         self.keys = []
 
-        self.addkey(pygame.K_w)
-        self.addkey(pygame.K_a)
-        self.addkey(pygame.K_s)
-        self.addkey(pygame.K_d)
+        self.create('w')
+        self.create('a')
+        self.create('s')
+        self.create('d')
 
-    def addkey(self, key):
-        self.keys_name.append(key)
-        self.keys.append(False)
+    def create(self, name):
+        name = Key(str(name))
+        self.keys.append(name)
 
-    def keys_update(self, count=0):
-
-        for key in self.keys_name:
-            if pygame.key.get_pressed()[key]:
-                self.keys[count] = True
+    def update(self):
+        for key in self.keys:
+            if pygame.key.get_pressed()[key.ascii_key]:
+                key.pressed = True
             else:
-                self.keys[count] = False
-            count += 1
+                key.pressed = False
 
 
 class Time:
@@ -102,3 +144,4 @@ class Render(Screen):
 
 if __name__ == '__main__':
     game = Game()
+
