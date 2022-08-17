@@ -35,6 +35,14 @@ class Game(Startup):
             self.window.win_update()
 
 
+class Camera:
+    def __init__(self, keys):
+        self.pos = [0,0]
+        self.keys = keys
+        self.speed = []
+
+    def check
+
 class Input:
     def __init__(self):
         self.keys_name = []
