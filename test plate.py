@@ -153,6 +153,8 @@ class Camera:
         print('p pos', track.pos)
         print('c pos', self.pos)
 
+
+
 class Input:
     def __init__(self):
         self.keys = []
