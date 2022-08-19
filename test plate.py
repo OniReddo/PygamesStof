@@ -35,7 +35,7 @@ class Game(Startup):
 
     def test(self):
         # Assets
-        self.handler.add_rec([0, 0, 0], [self.window.resx/2, self.window.resy/2], [10, 10])
+        self.handler.add_rec([0, 0, 0], [int(self.window.resx / 2), int(self.window.resy / 2)], [10, 10])
         self.handler.add_line([0, 0, 0], [0, 0], [100, 100])
         player = Player(self.handler.rect[0], self.inputs, ['w', 'a', 's', 'd'])
         while True:
@@ -45,9 +45,9 @@ class Game(Startup):
             Methods.quit()
             # Stuff
             self.inputs.update()
-            self.camera.update(self.time.dt)
-            player.update(self.time.dt)
-            print(self.inputs.mouse)
+            self.camera.update(self.time.dt, player.obj, self.window.res)
+            player.update(self.time.dt, self.inputs.mouse)
+
             # System
             self.window.win_update(self.handler.objs, self.camera.pos)
 
@@ -77,14 +77,21 @@ class Player:
 
     def move(self, key, house, step, dt):
         if key:
-            self.obj.t_pos[house] += step * dt
+            self.obj.t_pos[house] += int(step * dt)
 
-    def update(self, dt):
+    def teleport(self, mouse):
+        self.obj.t_pos[0] = mouse.pos[0]
+        self.obj.t_pos[1] = mouse.pos[1]
+
+    def update(self, dt, mouse):
         if self.control:
             self.move(self.keys[0], 1, -500, dt)
             self.move(self.keys[1], 0, -500, dt)
             self.move(self.keys[2], 1, 500, dt)
             self.move(self.keys[3], 0, 500, dt)
+
+            if mouse.left:
+                self.teleport(mouse)
 
 
 class Rect:
@@ -127,7 +134,7 @@ class Camera:
         self.keys = []
         self.control = True
 
-        for key in ['w', 'a', 's', 'd']:
+        for key in ['w', 'a', 's', 'd', ' ']:
             holder.add_key(key, self.keys)
 
         self.speed = []
@@ -136,13 +143,15 @@ class Camera:
         if key:
             self.pos[house] += step * dt
 
-    def update(self, dt):
-        if self.control:
-            self.move(self.keys[0], 1, -500, dt)
-            self.move(self.keys[1], 0, -500, dt)
-            self.move(self.keys[2], 1, 500, dt)
-            self.move(self.keys[3], 0, 500, dt)
+    def update(self, dt, track=None, res=None):
+        # Track
+        if track is not None and self.keys[4]:
+            self.pos[0] = track.t_pos[0] - int(res[0] / 2)
+            self.pos[1] = track.t_pos[1] - int(res[1] / 2)
 
+        print('\n p t_pos', track.t_pos)
+        print('p pos', track.pos)
+        print('c pos', self.pos)
 
 class Input:
     def __init__(self):
@@ -152,6 +161,7 @@ class Input:
         self.create('a')
         self.create('s')
         self.create('d')
+        self.create(' ')
 
         self.mouse = Mouse()
 
