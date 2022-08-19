@@ -47,6 +47,56 @@ class Game(Startup):
             self.window.win_update()
 
 
+
+
+class OBJ_Handler:
+    def __init__(self, screen):
+        self.screen = None
+        self.rect = []
+        self.line = []
+        self.objs = [self.rect, self.line]
+
+    def add_rec(self, color, pos, size):
+        self.rect.append(Rect(self.screen, color, pos, size))
+
+    def add_line(self, color, spos, epos):
+        self.line.append(Line(self.screen, color, spos, epos))
+
+
+class Rect:
+    def __init__(self, screen, color, pos, size):
+        self.screen = screen
+        self.color = color
+        self.pos = pos
+        self.truepos = self.pos
+        self.size = size
+
+    def draw(self, cam):
+        self.pos[0] = self.truepos[0] - cam[0]
+        self.pos[1] = self.truepos[1] - cam[1]
+
+        pygame.draw.rect(self.screen, self.color, (self.pos, self.size))
+
+
+class Line:
+    def __init__(self, screen, color, spos, epos):
+        self.screen = screen
+        self.color = color
+        self.t_spos = spos
+        self.t_epos = epos
+        self.spos = self.t_spos
+        self.epos = self.t_epos
+
+    def draw(self, cam):
+        self.t_spos[0] = self.t_spos[0] - cam[0]
+        self.t_spos[1] = self.t_spos[1] - cam[1]
+
+        self.t_epos[0] = self.t_epos[0] - cam[0]
+        self.t_epos[1] = self.t_epos[1] - cam[1]
+
+        pygame.draw.line(self.screen, self.color, self.spos, self.epos, 5)
+
+
 class Camera:
     def __init__(self, keys, holder):
         self.pos = [0, 0]
@@ -65,39 +115,6 @@ class Camera:
         self.move(self.keys[1], 1, -100, dt)
         self.move(self.keys[2], 0, 100, dt)
         self.move(self.keys[3], 1, 100, dt)
-
-
-class Key:
-    def __repr__(self):
-        return self.key
-
-    def __eq__(self, other):
-        if self.key == str(other):
-            return True
-
-    def __bool__(self):
-        if self.pressed:
-            return True
-        else:
-            return False
-
-    def __init__(self, key):
-
-        print('created key :', key.upper())
-
-        self.key = key
-        self.ascii_key = ord(key)
-        self.pressed = False
-
-
-class Mouse:
-    def __str__(self):
-        return f'{self.pos}, {self.left},{self.right}'
-
-    def __init__(self):
-        self.pos = [0, 0]
-        self.left = False
-        self.right = False
 
 
 class Input:
@@ -133,6 +150,39 @@ class Input:
         if pygame.mouse.get_pressed()[2]:
             self.mouse.right = True
         else: self.mouse.right = False
+
+
+class Key:
+    def __repr__(self):
+        return self.key
+
+    def __eq__(self, other):
+        if self.key == str(other):
+            return True
+
+    def __bool__(self):
+        if self.pressed:
+            return True
+        else:
+            return False
+
+    def __init__(self, key):
+
+        print('created key :', key.upper())
+
+        self.key = key
+        self.ascii_key = ord(key)
+        self.pressed = False
+
+
+class Mouse:
+    def __str__(self):
+        return f'{self.pos}, {self.left},{self.right}'
+
+    def __init__(self):
+        self.pos = [0, 0]
+        self.left = False
+        self.right = False
 
 
 class Time:
