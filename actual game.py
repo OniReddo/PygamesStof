@@ -162,7 +162,7 @@ class Camera:
     def __init__(self, holder):
         self.pos = [0, 0]
         self.keys = []
-        self.control = True
+        self.control = False
 
         for key in ['w', 'a', 's', 'd', ' ']:
             holder.add_key(key, self.keys)
@@ -182,6 +182,12 @@ class Camera:
         print('\n p t_pos', track.t_pos)
         print('p pos', track.pos)
         print('c pos', self.pos)
+
+        if self.control:
+            self.move(self.keys[0], 1, -500, dt)
+            self.move(self.keys[1], 0, -500, dt)
+            self.move(self.keys[2], 1, 500, dt)
+            self.move(self.keys[3], 0, 500, dt)
 
 
 class Input:
