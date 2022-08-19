@@ -10,11 +10,12 @@ class Window:
     windowx = 1280
     windowy = 720
     flags = pygame.SCALED | pygame.FULLSCREEN
-    window = pygame.display.set_mode((windowx, windowy),flags)
+    window = pygame.display.set_mode((windowx, windowy), flags)
 
 
 class Methods:
     paused = [False]
+
     @staticmethod
     def quit():
         for Event in pygame.event.get():
@@ -32,16 +33,14 @@ class Methods:
             Methods.paused[0] = True
 
 
-
 class Start:
     @staticmethod
     def start():
         Player.createplayer()
         Sword.create()
 
-        for a in range(0,8):
+        for a in range(0, 500):
             Enemy.create()
-
 
         Text.createtext(Input.playerinput, 50, 50)
         Text.createtext(' W  S  A  D', 50, 20)

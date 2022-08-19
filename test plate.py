@@ -35,12 +35,15 @@ class Game(Startup):
 
     def test(self):
         while True:
-            print(self.camera.pos)
+            # System
             self.time.clock.tick(self.framerate)
             self.time.update()
             Methods.quit()
+            # Stuff
             self.inputs.update()
             self.camera.update(self.time.dt)
+            print(self.inputs.mouse)
+            # System
             self.window.win_update()
 
 
@@ -87,6 +90,16 @@ class Key:
         self.pressed = False
 
 
+class Mouse:
+    def __str__(self):
+        return f'{self.pos}, {self.left},{self.right}'
+
+    def __init__(self):
+        self.pos = [0, 0]
+        self.left = False
+        self.right = False
+
+
 class Input:
     def __init__(self):
         self.keys = []
@@ -96,16 +109,30 @@ class Input:
         self.create('s')
         self.create('d')
 
+        self.mouse = Mouse()
+
     def create(self, name):
         name = Key(str(name))
         self.keys.append(name)
 
     def update(self):
+        #kboar
         for key in self.keys:
             if pygame.key.get_pressed()[key.ascii_key]:
                 key.pressed = True
             else:
                 key.pressed = False
+        #mosue
+        self.mouse.pos[0] = pygame.mouse.get_pos()[0]
+        self.mouse.pos[1] = pygame.mouse.get_pos()[1]
+
+        if pygame.mouse.get_pressed()[0]:
+            self.mouse.left = True
+        else: self.mouse.left = False
+
+        if pygame.mouse.get_pressed()[2]:
+            self.mouse.right = True
+        else: self.mouse.right = False
 
 
 class Time:
