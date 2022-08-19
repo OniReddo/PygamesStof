@@ -1,4 +1,3 @@
-
 import pygame
 import time
 
@@ -20,11 +19,12 @@ class Methods:
 
 class Startup:
     def __init__(self):
+        self.framerate = 165
         self.window = Render()
         self.time = Time()
-        self.framerate = 165
         self.inputs = Input()
-        self.camera = Camera(['w', 'a', 's', 'd'], self.inputs.keys)
+        self.camera = Camera(self.inputs)
+        self.handler = OBJ_Handler(self.window.window)
 
 
 class Game(Startup):
@@ -34,6 +34,10 @@ class Game(Startup):
         self.test()
 
     def test(self):
+        # Assets
+        self.handler.add_rec([0, 0, 0], [self.window.resx/2, self.window.resy/2], [10, 10])
+        self.handler.add_line([0, 0, 0], [0, 0], [100, 100])
+        player = Player(self.handler.rect[0], self.inputs, ['w', 'a', 's', 'd'])
         while True:
             # System
             self.time.clock.tick(self.framerate)
@@ -42,16 +46,15 @@ class Game(Startup):
             # Stuff
             self.inputs.update()
             self.camera.update(self.time.dt)
+            player.update(self.time.dt)
             print(self.inputs.mouse)
             # System
-            self.window.win_update()
-
-
+            self.window.win_update(self.handler.objs, self.camera.pos)
 
 
 class OBJ_Handler:
-    def __init__(self, screen):
-        self.screen = None
+    def __init__(self, screen=None):
+        self.screen = screen
         self.rect = []
         self.line = []
         self.objs = [self.rect, self.line]
@@ -63,17 +66,38 @@ class OBJ_Handler:
         self.line.append(Line(self.screen, color, spos, epos))
 
 
+class Player:
+    def __init__(self, obj, holder, keys):
+        self.obj = obj
+        self.keys = []
+        self.control = True
+
+        for key in keys:
+            holder.add_key(key, self.keys)
+
+    def move(self, key, house, step, dt):
+        if key:
+            self.obj.t_pos[house] += step * dt
+
+    def update(self, dt):
+        if self.control:
+            self.move(self.keys[0], 1, -500, dt)
+            self.move(self.keys[1], 0, -500, dt)
+            self.move(self.keys[2], 1, 500, dt)
+            self.move(self.keys[3], 0, 500, dt)
+
+
 class Rect:
     def __init__(self, screen, color, pos, size):
         self.screen = screen
         self.color = color
-        self.pos = pos
-        self.truepos = self.pos
+        self.pos = [0, 0]
+        self.t_pos = pos
         self.size = size
 
     def draw(self, cam):
-        self.pos[0] = self.truepos[0] - cam[0]
-        self.pos[1] = self.truepos[1] - cam[1]
+        self.pos[0] = self.t_pos[0] - cam[0]
+        self.pos[1] = self.t_pos[1] - cam[1]
 
         pygame.draw.rect(self.screen, self.color, (self.pos, self.size))
 
@@ -84,26 +108,28 @@ class Line:
         self.color = color
         self.t_spos = spos
         self.t_epos = epos
-        self.spos = self.t_spos
-        self.epos = self.t_epos
+        self.spos = [0, 0]
+        self.epos = [0, 0]
 
     def draw(self, cam):
-        self.t_spos[0] = self.t_spos[0] - cam[0]
-        self.t_spos[1] = self.t_spos[1] - cam[1]
+        self.spos[0] = self.t_spos[0] - cam[0]
+        self.spos[1] = self.t_spos[1] - cam[1]
 
-        self.t_epos[0] = self.t_epos[0] - cam[0]
-        self.t_epos[1] = self.t_epos[1] - cam[1]
+        self.epos[0] = self.t_epos[0] - cam[0]
+        self.epos[1] = self.t_epos[1] - cam[1]
 
         pygame.draw.line(self.screen, self.color, self.spos, self.epos, 5)
 
 
 class Camera:
-    def __init__(self, keys, holder):
+    def __init__(self, holder):
         self.pos = [0, 0]
         self.keys = []
-        self.holder = holder
-        for key in keys:
-            Methods.find_add(key, self.holder, self.keys)
+        self.control = True
+
+        for key in ['w', 'a', 's', 'd']:
+            holder.add_key(key, self.keys)
+
         self.speed = []
 
     def move(self, key, house, step, dt):
@@ -111,10 +137,11 @@ class Camera:
             self.pos[house] += step * dt
 
     def update(self, dt):
-        self.move(self.keys[0], 0, -100, dt)
-        self.move(self.keys[1], 1, -100, dt)
-        self.move(self.keys[2], 0, 100, dt)
-        self.move(self.keys[3], 1, 100, dt)
+        if self.control:
+            self.move(self.keys[0], 1, -500, dt)
+            self.move(self.keys[1], 0, -500, dt)
+            self.move(self.keys[2], 1, 500, dt)
+            self.move(self.keys[3], 0, 500, dt)
 
 
 class Input:
@@ -128,28 +155,35 @@ class Input:
 
         self.mouse = Mouse()
 
+    def add_key(self, find, add_to):
+        for search in self.keys:
+            if search == find:
+                add_to.append(search)
+
     def create(self, name):
         name = Key(str(name))
         self.keys.append(name)
 
     def update(self):
-        #kboar
+        # kboar
         for key in self.keys:
             if pygame.key.get_pressed()[key.ascii_key]:
                 key.pressed = True
             else:
                 key.pressed = False
-        #mosue
+        # mosue
         self.mouse.pos[0] = pygame.mouse.get_pos()[0]
         self.mouse.pos[1] = pygame.mouse.get_pos()[1]
 
         if pygame.mouse.get_pressed()[0]:
             self.mouse.left = True
-        else: self.mouse.left = False
+        else:
+            self.mouse.left = False
 
         if pygame.mouse.get_pressed()[2]:
             self.mouse.right = True
-        else: self.mouse.right = False
+        else:
+            self.mouse.right = False
 
 
 class Key:
@@ -213,11 +247,21 @@ class Render(Screen):
     def __init__(self):
         super().__init__()
 
-    def win_update(self):
+    def win_update(self, content, cam):
         self.window.fill((255, 255, 255))
+        self.render_list(content, cam)
         pygame.display.update()
+
+    @staticmethod
+    def render_list(content, cam):
+        # try:
+        if len(content) > 0:
+            for holder in content:
+                for obj in holder:
+                    obj.draw(cam)
+    # except:
+    #    print('bruh')
 
 
 if __name__ == '__main__':
     game = Game()
-
