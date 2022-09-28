@@ -275,6 +275,7 @@ class Render(Screen):
                     del handler.objs[obj.count]
                     handler.count -= 1
 
+
 if __name__ == '__main__':
     game = Game()
 
