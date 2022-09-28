@@ -1,0 +1,271 @@
+Game ---------------------------
+
+import time
+import random
+import pygame
+import inputs as npt
+
+pygame.init()
+
+
+class Time:
+    clock = pygame.time.Clock()
+    start_time = time.time()
+    now = 0
+    DT = 0
+    prev_time = 0
+
+    @classmethod
+    def update(cls):
+        cls.now = time.time()
+        cls.DT = cls.now - cls.prev_time
+        cls.prev_time = cls.now
+
+
+class Methods:
+    @staticmethod
+    def quit():
+        for Event in pygame.event.get():
+            if Event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+
+
+class Screen:
+    resx = 1600
+    resy = 900
+    res = [resx, resy]
+    flags = None
+    Window = pygame.display.set_mode(res)
+
+    @staticmethod
+    def update(rects, circles, texts):
+        Screen.Window.fill((255, 255, 255))
+        for rectan in rects:
+            rectan.draw()
+        for circle in circles:
+            circle.draw()
+        for text in texts:
+            text.draw()
+        pygame.display.update()
+
+
+class Camera:
+    pos = [0, 0]
+    zoom = 0  # Possible ?
+
+
+class Rct:
+    def __init__(self, pos, size, color):
+        self.pos = pos
+        self.size = size
+        self.color = color
+
+    def draw(self):
+        pygame.draw.rect(Screen.Window, self.color, (self.pos[0], self.pos[1], self.size[0], self.size[1]))
+
+
+class Circl:
+    def __init__(self, pos, radius, color):
+        self.pos = pos
+        self.radius = radius
+        self.color = color
+
+    def draw(self):
+        pygame.draw.circle(Screen.Window, self.color, self.pos, self.radius)
+
+
+class Txt:
+    textfont = pygame.font.SysFont("monospace", 20)
+
+    def __init__(self, text, pos, house=None):
+        self.path = text
+        self.text = str(self.path)
+        self.pos = pos
+        self.house = house
+        self.surface = Txt.textfont.render(self.text, True, (255, 255, 255))
+
+    def draw(self):
+        self.text = str(self.path)
+        self.surface = Txt.textfont.render(self.text, True, (255, 255, 255))
+        Screen.Window.blit(self.surface, (self.pos[0], self.pos[1]))
+
+
+class Player:
+    def __init__(self, obj, keys):
+        self.obj = obj
+        self.keys = keys
+        self.speed = 750
+
+    def update(self):
+
+        if self.keys[0] and self.obj.pos[1] > 200:
+            self.obj.pos[1] -= self.speed * Time.DT
+        if self.keys[1] and self.obj.pos[1] < 775:
+            self.obj.pos[1] += self.speed * Time.DT
+
+
+class Game_ball:
+    def __init__(self, obj):
+        self.obj = obj
+        self.con_speed = 850
+        self.bounce_ammount = [0,1]
+        self.speed = [self.con_speed, self.con_speed]
+
+    def update(self, player):
+        if self.obj.pos[1] < 205:
+            self.speed[1] = self.con_speed
+        if self.obj.pos[1] > 895:
+            self.speed[1] = -self.con_speed
+
+        if self.obj.pos[0] < 0:
+            self.speed[0] = self.con_speed
+        if self.obj.pos[0] > 1100:
+            self.speed[0] = -self.con_speed
+
+        for player in player:
+            player_rect = pygame.Rect((player.obj.pos[0], player.obj.pos[1]),
+                                      (player.obj.size[0], player.obj.size[1]))
+            ball_rect = pygame.Rect((self.obj.pos[0] - 5, self.obj.pos[1] - 5),
+                                    (self.obj.radius * 2, self.obj.radius * 2))
+
+            if player_rect.colliderect(ball_rect):
+                self.speed[0] = -self.speed[0]
+
+
+        self.obj.pos[0] += self.speed[0] * Time.DT
+        self.obj.pos[1] += self.speed[1] * Time.DT
+
+
+class Game:
+    def __init__(self):
+        self.fps = 10000
+        self.waiting = True
+
+        self.rects = [Rct([0, 0], [1600, 200], [50, 50, 50]), Rct([1100, 200], [500, 700], [50, 50, 50]),
+                      Rct([75, 475], [25, 125], [0, 0, 0]), Rct([1000, 475], [25, 125], [0, 0, 0]),
+                      Rct([0, 200], [20, 700], [200, 200, 200]), Rct([1080, 200], [20, 700], [200, 200, 200]),
+                      ]
+        self.circles = [Circl([550, 550], 10, [0, 0, 0]),Circl([550, 560], 10, [0, 0, 0])]
+
+        self.players = [Player(self.rects[2], [npt.Keys.W, npt.Keys.S]),
+                        Player(self.rects[3], [npt.Keys.P, npt.Keys.L])]
+        self.balls = [Game_ball(self.circles[0]), Game_ball(self.circles[1])]
+
+        self.texts = [Txt('W :', [1110, 210]), Txt(npt.Keys.W.pressed, [1150, 210]),
+                      Txt('S :', [1110, 230]), Txt(npt.Keys.S.pressed, [1150, 230]),
+                      Txt('P :', [1110, 250]), Txt(npt.Keys.P.pressed, [1150, 250]),
+                      Txt('L :', [1110, 270]), Txt(npt.Keys.L.pressed, [1150, 270]),
+                      Txt('Teclas P1 : W S', [100,100]), Txt('Teclas P2 : P L', [700,100]),
+                      Txt('Não deixe a bola bater na barra cinza do seu lado', [200, 50]),
+                      Txt('Coisa tecnica do game aq em baixo :', [1000, 170]),
+                      Txt('Posição P1 :', [1110, 290]), Txt(self.players[0].obj.pos, [1260, 290]),
+                      Txt('Posição P2 :', [1110, 310]), Txt(self.players[1].obj.pos, [1260, 310]),
+                      Txt('Ball :', [1110, 330]), Txt(self.balls[0].obj.pos, [1190, 330]),
+                      Txt('Ball speed:', [1110, 350]), Txt(self.balls[0].speed, [1250, 350]),
+                      Txt('Rec count:', [1110, 370]), Txt(len(self.rects), [1250, 370]),
+                      Txt('Circle count:', [1110, 390]), Txt(len(self.circles), [1280, 390]),
+                      Txt('Player count:', [1110, 410]), Txt(len(self.players), [1290, 410])
+                      ]
+
+        self.test_stage()
+
+    def test_stage(self):
+        while True:
+            if Time.now - Time.start_time > 1:
+                self.waiting = False
+
+            Time.clock.tick(self.fps)
+            Methods.quit()
+            Time.update()
+            npt.update()
+            if not self.waiting:
+                for player in self.players:
+                    player.update()
+                for ball in self.balls:
+                    ball.update(self.players)
+            Screen.update(self.rects, self.circles, self.texts)
+
+
+if __name__ == '__main__':
+    pygame.font.init()
+    game = Game()
+
+Inputs -----------------------------------------------------
+
+import pygame
+
+
+class Key:
+    @property
+    def __repr__(self):  # Print
+        return self.key
+
+    def __eq__(self, other):  # If key equals X
+        if self.key == str(other):
+            return True
+
+    def __bool__(self):  # If key is pressed
+        if self.pressed[0]:
+            return True
+        else:
+            return False
+
+    def __init__(self, key):
+        self.key = key
+        self.ascii_key = ord(key)
+        self.holding = False
+        self.pressed = [False]
+
+        print('created key :', key.upper())
+
+
+class Keys:
+    W = Key('w')
+    A = Key('a')
+    S = Key('s')
+    D = Key('d')
+    P = Key('p')
+    L = Key('l')
+
+    SPACE = Key(' ')
+
+    keys = [W, A, S, D, SPACE, P, L]
+
+    @classmethod
+    def update(cls):
+        for key in cls.keys:
+            if pygame.key.get_pressed()[key.ascii_key]:
+                key.pressed[0] = True
+            else:
+                key.pressed[0] = False
+
+
+class Mouse:
+    @classmethod
+    def status(cls):
+        return f'Mouse at: {cls.pos} | LMB, RMB: {cls.left_mb},{cls.right_mb}'
+
+    pos = [0, 0]
+    left_mb = False
+    right_mb = False
+
+    @classmethod
+    def update(cls):
+        cls.pos[0] = pygame.mouse.get_pos()[0]
+        cls.pos[1] = pygame.mouse.get_pos()[1]
+
+        if pygame.mouse.get_pressed()[0]:
+            cls.left = True
+        else:
+            cls.left = False
+        if pygame.mouse.get_pressed()[2]:
+            cls.right = True
+        else:
+            cls.right = False
+
+
+
+def update():
+    Keys.update()
+    Mouse.update()
