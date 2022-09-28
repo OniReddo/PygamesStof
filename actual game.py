@@ -260,6 +260,7 @@ class Mouse:
     def __str__(self):
         return f'Mouse at: {self.pos} | LMB, RMB: {self.left},{self.right}'
 
+
     def __init__(self):
         self.pos = [0, 0]
         self.left = False
@@ -312,3 +313,4 @@ class Render(Screen):
 
 if __name__ == '__main__':
     game = Game()
+
