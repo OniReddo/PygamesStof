@@ -11,7 +11,7 @@ class Key:
             return True
 
     def __bool__(self):  # If key is pressed
-        if self.pressed:
+        if self.pressed[0]:
             return True
         else:
             return False
@@ -20,7 +20,7 @@ class Key:
         self.key = key
         self.ascii_key = ord(key)
         self.holding = False
-        self.pressed = False
+        self.pressed = [False]
 
         print('created key :', key.upper())
 
@@ -30,18 +30,21 @@ class Keys:
     A = Key('a')
     S = Key('s')
     D = Key('d')
+    P = Key('p')
+    L = Key('l')
+    R = Key('r')
 
     SPACE = Key(' ')
 
-    keys = [W, A, S, D, SPACE]
+    keys = [W, A, S, D, SPACE, P, L, R]
 
     @classmethod
     def update(cls):
         for key in cls.keys:
             if pygame.key.get_pressed()[key.ascii_key]:
-                key.pressed = True
+                key.pressed[0] = True
             else:
-                key.pressed = False
+                key.pressed[0] = False
 
 
 class Mouse:

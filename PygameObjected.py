@@ -306,7 +306,7 @@ class Text:
         self.surface = Text.textfont.render(self.text, True, (0, 0, 0))
 
     @staticmethod
-    def txtupd():
+    def update():
         for textnum in Text.textwheel:
             textnum.text = str(textnum.path)
             textnum.surface = Text.textfont.render(textnum.text, True, (0, 0, 0))
